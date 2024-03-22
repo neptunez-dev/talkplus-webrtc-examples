@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./css/style.css">
+    <title>TalkPlus WebRTC Sample</title>
+</head>
+
+<body>
+    <div class="wrap">
+        <h1>
+            <a href="https://www.talkplus.io/intro/" target="_blank"><img src="./images/logo.svg" alt="logo"></a>
+            <span>WebRTC Sample</span>
+        </h1>
+        <div id="login-window" class="btn-box">
+            <button id="user-one-login-button" class="btn">
+                Login as Test User 1
+            </button>
+            <button id="user-two-login-button" class="btn">
+                Login as Test User 2
+            </button>
+        </div>
+        <div id="container">
+            <div class="video-box">
+                <video id="localVideo" playsinline autoplay muted></video>
+                <video id="remoteVideo" playsinline autoplay></video>
+            </div>
+            <div class="btn-box type2">
+                <button id="callButton" disabled class="btn">Call</button>
+                <button id="hangupButton" disabled class="btn">Hang Up</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="https://code.jquery.com/jquery-1.12.4.min.js"
+    integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://asset.talkplus.io/npm/talkplus-0.5.0"></script>
+<script defer src="./js/sample.js"></script>
+
+</html>
