@@ -33,8 +33,8 @@ const TalkTest = () => {
       });
 
       // 영상 통화 요청이 옴
-      client.call.on("incoming", (payload: any) => {
-        console.log(`video call incoming from ${payload.userId}`);
+      client.call.on("incoming", (event: any) => {
+        console.log(`video call incoming from ${event.userId}`);
         client.acceptCall({
           audio: false,
           video: true,

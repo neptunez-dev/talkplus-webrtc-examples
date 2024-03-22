@@ -65,14 +65,14 @@ function login(userId) {
     console.log("connection status changed:", ev);
   });
 
-  client.call.on("incoming", (payload) => {
-    console.log("incoming:", payload);
-    if (confirm(`Accept incoming call from ${payload.userId}?`)) {
+  client.call.on("incoming", (event) => {
+    console.log("incoming:", event);
+    if (confirm(`Accept incoming call from ${event.userId}?`)) {
       client.acceptCall({audio: false, video: true});
 
       setButtonsToCalledState();
     } else {
-      client.rejectCall(payload);
+      client.rejectCall();
 
       setButtonsToStartedState();
     }
