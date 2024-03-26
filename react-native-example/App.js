@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import * as TalkPlus from "./talkplus-rn-0.5.0.js";
+import * as TalkPlus from "./talkplus-rn-0.5.0-beta.4.js";
 import {
   Button,
   StyleSheet,
@@ -134,7 +134,7 @@ const TalkTest = () => {
             }
             {
               !remoteVideoStream && 
-              <View style={styles.video}/ >
+              <View style={styles.video} />
             }
             {
               remoteVideoStream && <Button title="End" onPress={endCall} />
