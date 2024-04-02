@@ -61,8 +61,8 @@ function login(userId) {
     document.getElementById("remoteVideo").innerHTML = "";
   });
 
-  client.call.on("statuschanged", (ev) => {
-    console.log("connection status changed:", ev);
+  client.call.on("statechanged", (ev) => {
+    console.log("connection state changed:", ev);
   });
 
   client.call.on("incoming", (event) => {

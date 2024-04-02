@@ -1,3 +1,8 @@
+## SDK
+- `js-example`은 [talkplus-0.5.0-beta.6](https://asset.talkplus.io/npm/talkplus-0.5.0-beta.6) 을 사용합니다.
+- `react-example` [TalkPlus JS SDK v0.5.0-beta6](https://www.npmjs.com/package/talkplus-sdk) 을 사용합니다.
+- `react-native-example`은 이 [가이드](https://github.com/neptunez-dev/talkplus-webrtc-examples/blob/main/README.md) 참고 부탁드립니다
+
 ## Functions
 #### 영상통화 요청 (기본 constraints 설정 사용: audio: true, video: true)
 ```javascript
@@ -42,7 +47,7 @@ client.endCall();
 #### 영상통화 요청
 ```javascript
 client.call.on("incoming", (event) => {
-    if (confirm(`Accept incoming call from ${event.userId}?`)) {
+    if (confirm(`Accept incoming call from ${event.userId} on channel: ${event.channelId}?`)) {
         client.acceptCall({audio: false, video: true});
 
     } else {
@@ -82,8 +87,8 @@ client.call.on("disconnected", (event) => {
 ```
 #### 영상통화 연결 상태 변경
 ```javascript
-client.call.on("statuschanged", (event) => {
-    console.log("connection status changed:", event);
+client.call.on("statechanged", (event) => {
+    console.log("connection state changed:", event);
 });
 ```
 #### 영상통화 연결 에러
