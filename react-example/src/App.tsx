@@ -7,14 +7,17 @@ const APP_ID = "YOUR_APP_ID";
 const DEMO_CHANNEL_ID = "YOUR_CHANNEL_ID";
 
 let client : TalkPlus.Client;
+let localStreamCopy;
+let localVideoTrack;
+let localAudioTrack;
 
 const TalkTest = () => {
   const [displayLoginScreen, setDisplayLoginScreen] = useState(true);
   const [inCallStatus, setInCallStatus] = useState(false);
   const [targetUserId, setTargetUserId] = useState("");
 
-  const [localVideoStream, setLocalVideoStream] = useState<MediaStream>();
-  const [remoteVideoStream, setRemoteVideoStream] = useState<MediaStream>();
+  const [localStream, setLocalStream] = useState<MediaStream>();
+  const [remoteStream, setRemoteStream] = useState<MediaStream>();
 
   useEffect(() => {
     console.log(
@@ -28,17 +31,14 @@ const TalkTest = () => {
       client.call.on("connected", (event: any) => {
         console.log('video call connected');
         if (event.streams.length) {
-          setRemoteVideoStream(event.streams[0]);
+          setRemoteStream(event.streams[0]);
         }
       });
 
       // 영상 통화 요청이 옴
       client.call.on("incoming", (event: any) => {
         console.log(`video call incoming from ${event.userId}`);
-        client.acceptCall({
-          audio: false,
-          video: true,
-        }); // WebRTC 영상 요청 수락
+        client.acceptCall({mediaStream: localStreamCopy}); // WebRTC 영상 요청 수락
         setInCallStatus(true);
       });
 
@@ -87,15 +87,18 @@ const TalkTest = () => {
     setDisplayLoginScreen(false);
 
     const localStream = await navigator.mediaDevices.getUserMedia({
-      audio: false,
+      audio: true,
       video: true,
     });
-    setLocalVideoStream(localStream);
+    setLocalStream(localStream);
+    localStreamCopy = localStream;
+    localVideoTrack = localStream.getVideoTracks()[0];
+    localAudioTrack = localStream.getAudioTracks()[0];
   };
 
   // 영상 통화 요청
   const makeCall = async () => {
-    await client.makeCall({ channelId: DEMO_CHANNEL_ID, targetUserId});
+    await client.makeCall({ channelId: DEMO_CHANNEL_ID, targetUserId, mediaStream: localStream});
     setInCallStatus(true);
   };
 
@@ -103,6 +106,18 @@ const TalkTest = () => {
   const endCall = async () => {
     await client.endCall();
     setInCallStatus(false);
+  };
+
+  const toggleLocalVideo = async() => {
+    if (localVideoTrack) {
+      localVideoTrack.enabled = !localVideoTrack.enabled
+    }
+  };
+
+  const toggleLocalAudio = async() => {
+    if (localAudioTrack) {
+      localAudioTrack.enabled = !localAudioTrack.enabled
+    }
   };
 
   return (
@@ -129,12 +144,14 @@ const TalkTest = () => {
       ) : (
         <div id="container">
           <div className="video-box">
-            <RTCVideo mediaStream={localVideoStream} />
-            <RTCVideo mediaStream={remoteVideoStream} />
+            <RTCVideo mediaStream={localStream} />
+            <RTCVideo mediaStream={remoteStream} />
           </div>
           <div className="btn-box type2">
             <button id="callButton" className="btn" onClick={makeCall} disabled={inCallStatus}>Call</button>
             <button id="hangupButton" className="btn" onClick={endCall} disabled={!inCallStatus}>Hang Up</button>
+            <button id="toggleVideo" className="btn" onClick={toggleLocalVideo} disabled={!inCallStatus}>ToggleVideo</button>
+            <button id="toggleAudio" className="btn" onClick={toggleLocalAudio} disabled={!inCallStatus}>ToggleAudio</button>
           </div>
         </div>
       )}

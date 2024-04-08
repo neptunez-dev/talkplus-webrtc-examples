@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import * as TalkPlus from "./talkplus-rn-0.5.0-beta.4.js";
+import * as TalkPlus from "./talkplus-rn-0.5.0-beta7.js";
 import {
   Button,
   StyleSheet,
@@ -14,13 +14,16 @@ const APP_ID = "YOUR_APP_ID";
 const DEMO_CHANNEL_ID = "YOUR_CHANNEL_ID";
 
 let client;
+let localStreamCopy;
+let localVideoTrack;
+let localAudioTrack;
 
 const TalkTest = () => {
   const [displayLoginScreen, setDisplayLoginScreen] = useState(true);
   const [targetUserId, setTargetUserId] = useState("");
 
-  const [localVideoStream, setLocalVideoStream] = useState(null);
-  const [remoteVideoStream, setRemoteVideoStream] = useState(null);
+  const [localStream, setLocalStream] = useState(null);
+  const [remoteStream, setRemoteStream] = useState(null);
 
   // must call this function in order for WebRTC functions in TalkPlus SDK to work!
   registerGlobals();
@@ -32,18 +35,18 @@ const TalkTest = () => {
       client.call.on("connected", (event) => {
         console.log('connected:', event);
         if (event.streams.length) {
-          setRemoteVideoStream(event.streams[0])
+          setRemoteStream(event.streams[0])
         }
       });
 
       client.call.on("incoming", (payload) => {
         console.log('incoming:', payload);
-        client.acceptCall({audio: false, video: true});
+        client.acceptCall({mediaStream: localStreamCopy});
       });
 
       client.call.on("disconnected", (event) => {
         console.log('disconnected:', event);
-        setRemoteVideoStream(null);
+        setRemoteStream(null);
       });
 
       client.call.on("rejected", () => {
@@ -88,16 +91,32 @@ const TalkTest = () => {
       video: true,
       audio: false,
     });
-    setLocalVideoStream(localStream)
+    setLocalStream(localStream)
+
+    localStreamCopy = localStream;
+    localVideoTrack = localStream.getVideoTracks()[0];
+    localAudioTrack = localStream.getAudioTracks()[0];
   };
 
   const showRemoteVideo = async () => {
-    await client.makeCall({ channelId: DEMO_CHANNEL_ID, targetUserId });
+    await client.makeCall({ channelId: DEMO_CHANNEL_ID, targetUserId, mediaStream: localStream});
   };
 
   const endCall = async () => {
     await client.endCall();
-    setRemoteVideoStream(null);
+    setRemoteStream(null);
+  };
+
+  const toggleLocalVideo = async() => {
+    if (localVideoTrack) {
+      localVideoTrack.enabled = !localVideoTrack.enabled
+    }
+  };
+
+  const toggleLocalAudio = async() => {
+    if (localAudioTrack) {
+      localAudioTrack.enabled = !localAudioTrack.enabled
+    }
   };
 
   return (
@@ -125,24 +144,29 @@ const TalkTest = () => {
         <View style={styles.video_container}>
 
             {
-              localVideoStream && 
-              <RTCView streamURL={localVideoStream.toURL()} objectFit={'cover'}  style={styles.video}/>
+              localStream && 
+              <RTCView streamURL={localStream.toURL()} objectFit={'cover'}  style={styles.video} />
             }
             {
-              remoteVideoStream && 
-              <RTCView streamURL={remoteVideoStream.toURL()} objectFit={'cover'} style={styles.video} />
+              remoteStream && 
+              <RTCView streamURL={remoteStream.toURL()} objectFit={'cover'} style={styles.video} />
             }
             {
-              !remoteVideoStream && 
+              !remoteStream && 
               <View style={styles.video} />
             }
             {
-              remoteVideoStream && <Button title="End" onPress={endCall} />
+              remoteStream && 
+              <View>
+                <Button title="End" onPress={endCall} />
+                <Button title="ToggleVideo" onPress={toggleLocalVideo} />
+                <Button title="ToggleAudio" onPress={toggleLocalAudio} />
+            </View>   
             }
           <View style={styles.button}>
-            {!remoteVideoStream && 
-              <Button title="Call" onPress={showRemoteVideo} />
-              }
+          {!remoteStream && 
+            <Button title="Call" onPress={showRemoteVideo} />
+          }
           </View>
           
         </View>

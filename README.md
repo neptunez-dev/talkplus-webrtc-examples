@@ -1,6 +1,6 @@
 ## SDK
-- `js-example`은 [talkplus-0.5.0-beta.6](https://asset.talkplus.io/npm/talkplus-0.5.0-beta.6) 을 사용합니다.
-- `react-example` [TalkPlus JS SDK v0.5.0-beta6](https://www.npmjs.com/package/talkplus-sdk) 을 사용합니다.
+- `js-example`은 [talkplus-0.5.0-beta.7](https://asset.talkplus.io/npm/talkplus-0.5.0-beta.7) 을 사용합니다.
+- `react-example` [TalkPlus JS SDK v0.5.0-beta7](https://www.npmjs.com/package/talkplus-sdk) 을 사용합니다.
 - `react-native-example`은 이 [가이드](https://github.com/neptunez-dev/talkplus-webrtc-examples/blob/main/README.md) 참고 부탁드립니다
 
 ## Functions
@@ -23,6 +23,18 @@ client.makeCall({
     }
 });
 ```
+#### 영상통화 요청 (직접 관리하는 MediaStream 사용)
+```javascript
+const localStream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: true,
+});
+client.makeCall({
+    channelId: 'channelId', 
+    targetUserId: 'targetUserId', 
+    mediaStream: localStream,
+});
+```
 #### 영상통화 수락 (기본 설정 사용: audio: true, video: true)
 ```javascript
 client.acceptCall();
@@ -30,9 +42,16 @@ client.acceptCall();
 #### 영상통화 수락 (constraints 또는 MediaTrackConstraints 사용)
 참고: https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
 ```javascript
+client.acceptCall({constraint: {
+        audio: false,
+        video: true,
+    }
+});
+```
+#### 영상통화 수락 (직접 관리하는 MediaStream 사용)
+```javascript
 client.acceptCall({
-    audio: false,
-    video: true,
+    mediaStream: myLocalMediaStream,
 });
 ```
 #### 영상통화 거절

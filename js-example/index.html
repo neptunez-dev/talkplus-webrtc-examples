@@ -24,12 +24,16 @@
         </div>
         <div id="container">
             <div class="video-box">
-                <video id="localVideo" playsinline autoplay muted></video>
+                <video id="localVideo" playsinline autoplay></video>
                 <video id="remoteVideo" playsinline autoplay></video>
             </div>
             <div class="btn-box type2">
                 <button id="callButton" disabled class="btn">Call</button>
                 <button id="hangupButton" disabled class="btn">Hang Up</button>
+            </div>
+            <div class="btn-box type2">
+                <button id="toggleVideoButton" class="btn">ToggleVideo</button>
+                <button id="toggleAudioButton" class="btn">ToggleAudio</button>
             </div>
         </div>
     </div>
@@ -37,7 +41,7 @@
 
 <script src="https://code.jquery.com/jquery-1.12.4.min.js"
     integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
-<script src="https://asset.talkplus.io/npm/talkplus-0.5.0-beta.6"></script>
+<script src="https://asset.talkplus.io/npm/talkplus-0.5.0-beta.7"></script>
 <script defer src="./js/sample.js"></script>
 
 </html>

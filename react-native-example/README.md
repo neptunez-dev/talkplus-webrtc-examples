@@ -1,7 +1,7 @@
 ## 기본 설정
 #### 라이브러리 버전
 이 샘플 React Native 샘플 프로젝트는 다음 라이브러리들을 사용합니다:
-- [talkplus-rn-0.5.0-beta6.js](https://asset.talkplus.io/react-native/talkplus-rn-0.5.0-beta6.js)
+- [talkplus-rn-0.5.0-beta7.js](https://asset.talkplus.io/react-native/talkplus-rn-0.5.0-beta7.js)
 - expo 
 - react-native-webrtc
 - @config-plugins/react-native-webrtc
@@ -31,9 +31,21 @@ client.makeCall({
     channelId: 'channelId', 
     targetUserId: 'targetUserId', 
     constraints: {
-        audio: false, 
+        audio: false, // 내 mute를 원할 경우 
         video: true,
     }
+});
+```
+#### 영상통화 요청 (직접 관리하는 MediaStream 사용)
+```javascript
+const localStream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: true,
+});
+client.makeCall({
+    channelId: 'channelId', 
+    targetUserId: 'targetUserId', 
+    mediaStream: localStream,
 });
 ```
 #### 영상통화 수락 (기본 설정 사용: audio: true, video: true)
@@ -46,6 +58,12 @@ client.acceptCall();
 client.acceptCall({
     audio: false,
     video: true,
+});
+```
+#### 영상통화 수락 (직접 관리하는 MediaStream 사용)
+```javascript
+client.acceptCall({
+    mediaStream: myLocalMediaStream,
 });
 ```
 #### 영상통화 거절

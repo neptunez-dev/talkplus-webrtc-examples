@@ -13,7 +13,7 @@ const RTCVideo = ({ mediaStream }: RTCVideoProps) => {
     viewRef.current.srcObject = mediaStream ? mediaStream : null;
   }, [mediaStream]);
 
-  return <video ref={viewRef} autoPlay muted playsInline></video>;
+  return <video ref={viewRef} autoPlay playsInline></video>;
 };
 
 export default RTCVideo;

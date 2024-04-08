@@ -3,6 +3,8 @@ const DEMO_CHANNEL_ID = "YOUR_CHANNEL";
 
 let client;
 let localStream;
+let localVideoTrack;
+let localAudioTrack;
 let currentUserId;
 
 let remoteVideo = document.getElementById("remoteVideo");
@@ -20,6 +22,16 @@ function showVideoWindow() {
   });
   $("#hangupButton").on("click", () => {
     endCall();
+  });
+  $("#toggleVideoButton").on("click", () => {
+    if (localVideoTrack) {
+      localVideoTrack.enabled = !localVideoTrack.enabled;
+    }
+  });
+  $("#toggleAudioButton").on("click", () => {
+    if (localAudioTrack) {
+      localAudioTrack.enabled = !localAudioTrack.enabled;
+    }
   });
 }
 
@@ -68,8 +80,7 @@ function login(userId) {
   client.call.on("incoming", (event) => {
     console.log("incoming:", event);
     if (confirm(`Accept incoming call from ${event.userId}?`)) {
-      client.acceptCall({audio: false, video: true});
-
+      client.acceptCall({mediaStream: localStream});
       setButtonsToCalledState();
     } else {
       client.rejectCall();
@@ -133,16 +144,21 @@ async function start() {
   setButtonsToStartedState();
 
   const stream = await navigator.mediaDevices.getUserMedia({
-    audio: false,
+    audio: true,
     video: true,
   });
   document.getElementById("localVideo").srcObject = stream;
   localStream = stream;
+
+  localVideoTrack = stream.getVideoTracks()[0];
+  localAudioTrack = stream.getAudioTracks()[0];
 }
 
 function setButtonsToStartedState() {
   $("#callButton").attr("disabled", false);
   $("#hangupButton").attr("disabled", true);
+  $("#toggleVideoButton").attr("disabled", true);
+  $("#toggleAudioButton").attr("disabled", true);
 }
 
 async function call() {
@@ -150,12 +166,14 @@ async function call() {
 
   const targetUserId = currentUserId === "test1" ? "test2" : "test1";
   console.log("targetUserId:", targetUserId);
-  await client.makeCall({ channelId: DEMO_CHANNEL_ID, targetUserId });
+  await client.makeCall({ channelId: DEMO_CHANNEL_ID, targetUserId, mediaStream: localStream });
 }
 
 function setButtonsToCalledState() {
   $("#callButton").attr("disabled", true);
   $("#hangupButton").attr("disabled", false);
+  $("#toggleVideoButton").attr("disabled", false);
+  $("#toggleAudioButton").attr("disabled", false);
 }
 
 function endCall() {
