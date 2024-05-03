@@ -14,7 +14,7 @@ let localAudioTrack;
 const TalkTest = () => {
   const [displayLoginScreen, setDisplayLoginScreen] = useState(true);
   const [inCallStatus, setInCallStatus] = useState(false);
-  const [targetUserId, setTargetUserId] = useState("");
+  const [calleeId, setCalleeId] = useState("");
 
   const [localStream, setLocalStream] = useState<MediaStream>();
   const [remoteStream, setRemoteStream] = useState<MediaStream>();
@@ -28,23 +28,33 @@ const TalkTest = () => {
       client = new TalkPlus.Client({ appId: APP_ID });
 
       // 영상 통화가 성공적으로 연결됨
-      client.call.on("connected", (event: any) => {
+      client.call.on("connected", (callInfo: any) => {
         console.log('video call connected');
-        if (event.streams.length) {
-          setRemoteStream(event.streams[0]);
+        const { channelId, callerId, calleeId, trackEvent } = callInfo;
+        if (trackEvent.streams.length) {
+          setRemoteStream(trackEvent.streams[0]);
         }
       });
 
       // 영상 통화 요청이 옴
-      client.call.on("incoming", (event: any) => {
-        console.log(`video call incoming from ${event.userId}`);
+      client.call.on("incoming", (callInfo: any) => {
+        const { channelId, callerId, calleeId } = callInfo;
+        console.log(`video call incoming from ${callerId}`);
         client.acceptCall({mediaStream: localStreamCopy}); // WebRTC 영상 요청 수락
         setInCallStatus(true);
       });
 
-      // 영상 통화 연결이 끊김
-      client.call.on("disconnected", () => {
-        console.log('video call disconnected');
+      // 영상 통화 종료/거절/취소
+      client.call.on("ended", (callInfo) => {
+        const { channelId, callerId, calleeId, endReasonCode, endReasonMessage } = callInfo;
+        console.log(`video call ended: ${endReasonMessage}`);
+        setInCallStatus(false);
+      });
+
+      // 영상통화 연결이 비정상적으로 끊김
+      client.call.on("failed", (callInfo) => {
+        const { channelId, callerId, calleeId } = callInfo;
+        console.log(`video call connection failed: ${channelId}`);
         setInCallStatus(false);
       });
     }
@@ -53,9 +63,9 @@ const TalkTest = () => {
   const handleTestUserLogin = async (userId: string) => {
     // 'test1' 또는 'test2' 사용자로 익명 로그인
     if (userId === "test1") {
-      setTargetUserId("test2");
+      setCalleeId("test2");
     } else {
-      setTargetUserId("test1");
+      setCalleeId("test1");
     }
 
     await client
@@ -98,7 +108,7 @@ const TalkTest = () => {
 
   // 영상 통화 요청
   const makeCall = async () => {
-    await client.makeCall({ channelId: DEMO_CHANNEL_ID, targetUserId, mediaStream: localStream});
+    await client.makeCall({ channelId: DEMO_CHANNEL_ID, calleeId, mediaStream: localStream});
     setInCallStatus(true);
   };
 

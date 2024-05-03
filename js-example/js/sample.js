@@ -47,46 +47,61 @@ function login(userId) {
 
   client = new TalkPlus.Client({ appId: APP_ID });
 
-  client.call.on("connected", (event) => {
-    console.log("connected");
-    if (event.streams.length) {
+  // 영상통화가 성공적으로 연결됨
+  client.call.on("connected", (callInfo) => {
+    const { channelId, callerId, calleeId, trackEvent } = callInfo;
+    if (trackEvent.streams.length) {
       setButtonsToCalledState();
 
-      remoteVideo.srcObject = event.streams[0];
+      remoteVideo.srcObject = trackEvent.streams[0];
       remoteVideo.autoplay = true;
       remoteVideo.controls = true;
     }
 
-    event.track.onmute = function (event) {
+    trackEvent.track.onmute = function (event) {
       console.log("Track muted");
       remoteVideo.play();
     };
 
-    event.track.onended = function (event) {
+    trackEvent.track.onended = function (event) {
       console.log("Track ended");
       setButtonsToStartedState();
     };
   });
 
-  client.call.on("disconnected", (event) => {
-    console.log("disconnected");
-    document.getElementById("remoteVideo").innerHTML = "";
-  });
-
-  client.call.on("statechanged", (ev) => {
-    console.log("connection state changed:", ev);
-  });
-
-  client.call.on("incoming", (event) => {
-    console.log("incoming:", event);
-    if (confirm(`Accept incoming call from ${event.userId}?`)) {
+  // 영상통화 요청이 옴
+  client.call.on("incoming", (callInfo) => {
+    const { channelId, callerId, calleeId } = callInfo;
+    if (confirm(`Accept incoming call from ${callerId}?`)) {
       client.acceptCall({mediaStream: localStream});
       setButtonsToCalledState();
     } else {
-      client.rejectCall();
+      client.endCall();
 
       setButtonsToStartedState();
     }
+  });
+
+  // 영상통화 종료/거절/취소
+  client.call.on("ended", (callInfo) => {
+    const { channelId, callerId, calleeId, endReasonCode, endReasonMessage } = callInfo;
+    console.log(`call ended: ${endReasonMessage}`);
+    document.getElementById("remoteVideo").innerHTML = "";
+    setButtonsToStartedState();
+  });
+
+  // 영상통화 연결이 비정상적으로 끊김
+  client.call.on("failed", (callInfo) => {
+    const { channelId, callerId, calleeId } = callInfo;
+    console.log(`connection failed: channelId: ${channelId}`);
+    document.getElementById("remoteVideo").innerHTML = "";
+    setButtonsToStartedState();
+  });
+
+  // 영상통화 연결 상태 변경
+  client.call.on("statechanged", (callInfo) => {
+    const { channelId, callerId, calleeId, state } = callInfo;
+    console.log("connection state changed:", state);
   });
 
   client.loginAnonymous(
@@ -164,9 +179,9 @@ function setButtonsToStartedState() {
 async function call() {
   setButtonsToCalledState();
 
-  const targetUserId = currentUserId === "test1" ? "test2" : "test1";
-  console.log("targetUserId:", targetUserId);
-  await client.makeCall({ channelId: DEMO_CHANNEL_ID, targetUserId, mediaStream: localStream });
+  const calleeId = currentUserId === "test1" ? "test2" : "test1";
+  console.log("calleeId:", calleeId);
+  await client.makeCall({ channelId: DEMO_CHANNEL_ID, calleeId, mediaStream: localStream });
 }
 
 function setButtonsToCalledState() {

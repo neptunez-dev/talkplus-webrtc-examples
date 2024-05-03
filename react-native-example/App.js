@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import * as TalkPlus from "./talkplus-rn-0.5.0-beta7.js";
+import * as TalkPlus from "./talkplus-rn-0.5.1.js";
 import {
   Button,
   StyleSheet,
@@ -20,7 +20,7 @@ let localAudioTrack;
 
 const TalkTest = () => {
   const [displayLoginScreen, setDisplayLoginScreen] = useState(true);
-  const [targetUserId, setTargetUserId] = useState("");
+  const [calleeId, setCalleeId] = useState("");
 
   const [localStream, setLocalStream] = useState(null);
   const [remoteStream, setRemoteStream] = useState(null);
@@ -32,34 +32,43 @@ const TalkTest = () => {
     if (!client || !client.isLoggedIn()) {
       client = new TalkPlus.Client({ appId: APP_ID });
 
-      client.call.on("connected", (event) => {
-        console.log('connected:', event);
-        if (event.streams.length) {
-          setRemoteStream(event.streams[0])
+      // 영상 통화가 성공적으로 연결됨
+      client.call.on("connected", (callInfo) => {
+        console.log('call connected');
+        const { channelId, callerId, calleeId, trackEvent } = callInfo;
+        if (trackEvent.streams.length) {
+          setRemoteStream(trackEvent.streams[0])
         }
       });
 
-      client.call.on("incoming", (payload) => {
-        console.log('incoming:', payload);
+      // 영상 통화 요청이 옴
+      client.call.on("incoming", (callInfo) => {
+        const { channelId, callerId, calleeId } = callInfo;
+        console.log(`Incoming call from ${callerId}`);
         client.acceptCall({mediaStream: localStreamCopy});
       });
 
-      client.call.on("disconnected", (event) => {
-        console.log('disconnected:', event);
+      // 영상 통화 종료/거절/취소
+      client.call.on("ended", (callInfo) => {
+        const { channelId, callerId, calleeId, endReasonCode, endReasonMessage } = callInfo;
+        console.log(`call ended: ${endReasonMessage}`);
         setRemoteStream(null);
       });
 
-      client.call.on("rejected", () => {
-        console.log('rejected:');
+      // 영상통화 연결이 비정상적으로 끊김
+      client.call.on("failed", (callInfo) => {
+        const { channelId, callerId, calleeId } = callInfo;
+        console.log(`failed: channelId: ${channelId}`);
+        setRemoteStream(null);
       });
     }
   }, []);
 
   const handleUserLogin = async (userId) => {
     if (userId === "test1") {
-      setTargetUserId("test2");
+      setCalleeId("test2");
     } else {
-      setTargetUserId("test1");
+      setCalleeId("test1");
     }
     try {
       await client.loginAnonymous({
@@ -99,7 +108,7 @@ const TalkTest = () => {
   };
 
   const showRemoteVideo = async () => {
-    await client.makeCall({ channelId: DEMO_CHANNEL_ID, targetUserId, mediaStream: localStream});
+    await client.makeCall({ channelId: DEMO_CHANNEL_ID, calleeId, mediaStream: localStream});
   };
 
   const endCall = async () => {
