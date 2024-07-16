@@ -19,10 +19,7 @@ registerGlobals();
 ## Functions
 #### 현재 영상통화 중 상태 확인
 ```javascript
-const isCurrenlyInCall = client.isInCall({
-    channelId: 'channelId', 
-    calleeId: 'calleeId',
-});
+const isCurrenlyInCall = client.isInCall();
 ```
 #### 영상통화 요청 (기본 constraints 설정 사용: audio: true, video: true)
 ```javascript
