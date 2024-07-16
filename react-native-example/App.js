@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import * as TalkPlus from "./talkplus-rn-0.5.1.js";
+import * as TalkPlus from "./talkplus-rn-0.5.3.js";
 import {
   Button,
   StyleSheet,

@@ -1,9 +1,9 @@
 ## 기본 설정
 #### 라이브러리 버전
 이 샘플 React Native 샘플 프로젝트는 다음 라이브러리들을 사용합니다:
-- [talkplus-rn-0.5.1.js](https://asset.talkplus.io/react-native/talkplus-rn-0.5.1.js)
+- [talkplus-rn-0.5.3.js](https://asset.talkplus.io/react-native/talkplus-rn-0.5.3.js)
 - expo 
-- react-native-webrtc
+- react-native-webrtc 
 - @config-plugins/react-native-webrtc
 이 [페이지](https://github.com/expo/config-plugins/tree/main/packages/react-native-webrtc) 에서 호환되는 라이브러리 버전을 확인하시기 바랍니다.
     
@@ -17,6 +17,13 @@ registerGlobals();
 ---
 
 ## Functions
+#### 현재 영상통화 중 상태 확인
+```javascript
+const isCurrenlyInCall = client.isInCall({
+    channelId: 'channelId', 
+    calleeId: 'calleeId',
+});
+```
 #### 영상통화 요청 (기본 constraints 설정 사용: audio: true, video: true)
 ```javascript
 const { callerId, calleeId, channelId } = await client.makeCall({

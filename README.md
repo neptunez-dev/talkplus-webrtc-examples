@@ -1,9 +1,16 @@
 ## SDK
-- `js-example`은 [talkplus-0.5.1](https://asset.talkplus.io/npm/talkplus-0.5.1) 을 사용합니다.
-- `react-example` [TalkPlus JS SDK v0.5.1](https://www.npmjs.com/package/talkplus-sdk) 을 사용합니다.
+- `js-example`은 [talkplus-0.5.3](https://asset.talkplus.io/npm/talkplus-0.5.3) 을 사용합니다.
+- `react-example` [TalkPlus JS SDK v0.5.3](https://www.npmjs.com/package/talkplus-sdk) 을 사용합니다.
 - `react-native-example`은 이 [가이드](https://github.com/neptunez-dev/talkplus-webrtc-examples/blob/main/README.md) 참고 부탁드립니다
 
 ## Functions
+#### 현재 영상통화 중 상태 확인
+```javascript
+const isCurrenlyInCall = client.isInCall({
+    channelId: 'channelId', 
+    calleeId: 'calleeId',
+});
+```
 #### 영상통화 요청 (기본 constraints 설정 사용: audio: true, video: true)
 ```javascript
 const { callerId, calleeId, channelId } = await client.makeCall({
