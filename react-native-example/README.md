@@ -1,7 +1,7 @@
 ## 기본 설정
 #### 라이브러리 버전
 이 샘플 React Native 샘플 프로젝트는 다음 라이브러리들을 사용합니다:
-- >=[talkplus-0.5.4](https://asset.talkplus.io/npm/talkplus-0.5.4)
+- [talkplus-0.5.4](https://asset.talkplus.io/npm/talkplus-0.5.4) 이상 버전
 - expo 
 - react-native-webrtc 
 - @config-plugins/react-native-webrtc
