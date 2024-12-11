@@ -1,7 +1,7 @@
 ## SDK
-- `js-example`은 [talkplus-0.5.4](https://asset.talkplus.io/npm/talkplus-0.5.4) 을 사용합니다.
-- `react-example` [TalkPlus JS SDK v0.5.4](https://www.npmjs.com/package/talkplus-sdk) 을 사용합니다.
-- `react-native-example`은 이 [가이드](https://github.com/neptunez-dev/talkplus-webrtc-examples/blob/main/README.md) 참고 부탁드립니다
+- `js-example`은 >=[talkplus-0.5.4](https://asset.talkplus.io/npm/talkplus-0.5.4) 을 사용합니다.
+- `react-example` >=[TalkPlus JS SDK v0.5.4](https://www.npmjs.com/package/talkplus-sdk) 을 사용합니다.
+- `react-native-example`은 이 [가이드](https://github.com/neptunez-dev/talkplus-webrtc-examples/blob/main/react-native-example/README.md) 참고 부탁드립니다
 
 ## Functions
 #### 현재 영상통화 중 상태 확인
